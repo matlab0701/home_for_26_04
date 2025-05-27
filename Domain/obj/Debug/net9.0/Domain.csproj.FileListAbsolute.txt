@@ -1,0 +1,13 @@
+C:\Users\HP\Desktop\Web_Projects\home_tasks\home_task_25_05\Domain\bin\Debug\net9.0\Domain.deps.json
+C:\Users\HP\Desktop\Web_Projects\home_tasks\home_task_25_05\Domain\bin\Debug\net9.0\Domain.dll
+C:\Users\HP\Desktop\Web_Projects\home_tasks\home_task_25_05\Domain\bin\Debug\net9.0\Domain.pdb
+C:\Users\HP\Desktop\Web_Projects\home_tasks\home_task_25_05\Domain\obj\Debug\net9.0\Domain.csproj.AssemblyReference.cache
+C:\Users\HP\Desktop\Web_Projects\home_tasks\home_task_25_05\Domain\obj\Debug\net9.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\HP\Desktop\Web_Projects\home_tasks\home_task_25_05\Domain\obj\Debug\net9.0\Domain.AssemblyInfoInputs.cache
+C:\Users\HP\Desktop\Web_Projects\home_tasks\home_task_25_05\Domain\obj\Debug\net9.0\Domain.AssemblyInfo.cs
+C:\Users\HP\Desktop\Web_Projects\home_tasks\home_task_25_05\Domain\obj\Debug\net9.0\Domain.csproj.CoreCompileInputs.cache
+C:\Users\HP\Desktop\Web_Projects\home_tasks\home_task_25_05\Domain\obj\Debug\net9.0\Domain.dll
+C:\Users\HP\Desktop\Web_Projects\home_tasks\home_task_25_05\Domain\obj\Debug\net9.0\refint\Domain.dll
+C:\Users\HP\Desktop\Web_Projects\home_tasks\home_task_25_05\Domain\obj\Debug\net9.0\Domain.pdb
+C:\Users\HP\Desktop\Web_Projects\home_tasks\home_task_25_05\Domain\obj\Debug\net9.0\ref\Domain.dll
+C:\Users\HP\Desktop\Web_Projects\home_tasks\home_task_25_05\Domain\obj\Debug\net9.0\Domain.sourcelink.json
