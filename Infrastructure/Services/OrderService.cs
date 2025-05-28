@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Services;
 
-public class OrderService(IBaseRepository<Order, int> repository, ILogger<OrderService> logger, IMapper mapper, IMemoryCacheService memoryCacheService) : IOrderService
+public class OrderService(IBaseRepository<Order, int> repository, ILogger<OrderService> logger, IMapper mapper, IMemoryCacheService memoryCacheService, IRedisCacheService redisCacheService) : IOrderService
 {
     public async Task<Response<GetOrderDto>> CreateAsync(CreateOrderDto request)
     {
@@ -20,7 +20,8 @@ public class OrderService(IBaseRepository<Order, int> repository, ILogger<OrderS
             return new Response<GetOrderDto>(HttpStatusCode.BadRequest, "order not added!");
         }
         var data = mapper.Map<GetOrderDto>(order);
-          await memoryCacheService.DeleteData("orderies"); 
+        //   await memoryCacheService.DeleteData("orderies"); 
+        await redisCacheService.RemoveData("orderies");
 
         return new Response<GetOrderDto>(data);
     }
@@ -37,7 +38,8 @@ public class OrderService(IBaseRepository<Order, int> repository, ILogger<OrderS
         {
             return new Response<string>(HttpStatusCode.BadRequest, "Order not deleted!");
         }
-        await memoryCacheService.DeleteData("orderies"); 
+        await memoryCacheService.DeleteData("orderies");
+        await redisCacheService.RemoveData("orderies");
         return new Response<string>("Order deleted successfuly");
     }
 
@@ -48,18 +50,19 @@ public class OrderService(IBaseRepository<Order, int> repository, ILogger<OrderS
         const string cacheKey = "orderies";
 
 
-        var order = await memoryCacheService.GetData<List<GetOrderDto>>(cacheKey);
+        // var order = await memoryCacheService.GetData<List<GetOrderDto>>(cacheKey);
+        var order = await redisCacheService.GetData<List<GetOrderDto>>(cacheKey);
         if (order == null)
         {
             var orderies = await repository.GetAll();
             order = orderies.Select(o => new GetOrderDto()
             {
-                Id=o.Id,
+                Id = o.Id,
                 UserId = o.UserId,
                 ProductId = o.ProductId,
                 Quantity = o.Quantity,
                 OrderDate = o.OrderDate,
-                Status=o.Status
+                Status = o.Status
 
             }).ToList();
             await memoryCacheService.SetData(cacheKey, order, 1);
@@ -108,7 +111,8 @@ public class OrderService(IBaseRepository<Order, int> repository, ILogger<OrderS
         }
 
         var data = mapper.Map<GetOrderDto>(order);
-await memoryCacheService.DeleteData("orderies"); 
+        // await memoryCacheService.DeleteData("orderies"); 
+        await redisCacheService.RemoveData("orderies");
         return new Response<GetOrderDto>(data);
     }
 
@@ -129,7 +133,8 @@ await memoryCacheService.DeleteData("orderies");
         }
 
         var data = mapper.Map<GetOrderDto>(order);
-        await memoryCacheService.DeleteData("orderies"); 
+        // await memoryCacheService.DeleteData("orderies"); 
+        await redisCacheService.RemoveData("orderies");
         return new Response<GetOrderDto>(data);
 
     }

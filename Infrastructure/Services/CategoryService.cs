@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Services;
 
-public class CategoryService(IBaseRepository<Category, int> repository, IMapper mapper, ILogger<CategoryService> logger, IMemoryCacheService memoryCacheService) : ICategoryService
+public class CategoryService(IBaseRepository<Category, int> repository, IMapper mapper, ILogger<CategoryService> logger, IMemoryCacheService memoryCacheService, IRedisCacheService redisCacheService) : ICategoryService
 {
     public async Task<Response<GetCategoryDto>> CraeteAsync(CreateCategoryDto request)
     {
@@ -21,7 +21,8 @@ public class CategoryService(IBaseRepository<Category, int> repository, IMapper 
             return new Response<GetCategoryDto>(HttpStatusCode.NotFound, "Id is not found");
         }
         var data = mapper.Map<GetCategoryDto>(cat);
-        await memoryCacheService.DeleteData("categories");
+        // await memoryCacheService.DeleteData("categories");
+        await redisCacheService.RemoveData("categories");
         return new Response<GetCategoryDto>(data);
     }
 
@@ -37,7 +38,8 @@ public class CategoryService(IBaseRepository<Category, int> repository, IMapper 
         {
             return new Response<string>(HttpStatusCode.BadRequest, "Category not deleted!");
         }
-        await memoryCacheService.DeleteData("categories"); 
+        // await memoryCacheService.DeleteData("categories");
+        await redisCacheService.RemoveData("categories");
         return new Response<string>("Category delete to succes!");
 
     }
@@ -46,7 +48,9 @@ public class CategoryService(IBaseRepository<Category, int> repository, IMapper 
     {
         const string cacheKey = "categories";
 
-        var category = await memoryCacheService.GetData<List<GetCategoryDto>>(cacheKey);
+        // var category = await memoryCacheService.GetData<List<GetCategoryDto>>(cacheKey);
+        var category = await redisCacheService.GetData<List<GetCategoryDto>>(cacheKey);
+
         var validFilter = new ValidFilter(filter.PageNumber, filter.PageSize);
 
         if (category == null)
@@ -93,7 +97,9 @@ public class CategoryService(IBaseRepository<Category, int> repository, IMapper 
             return new Response<GetCategoryDto>(HttpStatusCode.NotFound, "Id is not found");
         }
         var data = mapper.Map<GetCategoryDto>(res);
-        await memoryCacheService.DeleteData("categories"); ;
+        // await memoryCacheService.DeleteData("categories"); 
+        await redisCacheService.RemoveData("categories");
+
         return new Response<GetCategoryDto>(data);
 
     }
@@ -118,7 +124,8 @@ public class CategoryService(IBaseRepository<Category, int> repository, IMapper 
             return new Response<GetCategoryDto>(HttpStatusCode.BadRequest, "category not updated");
         }
         var data = mapper.Map<GetCategoryDto>(category);
-        await memoryCacheService.DeleteData("categories"); 
+        // await memoryCacheService.DeleteData("categories"); 
+        await redisCacheService.RemoveData("categories");
         return new Response<GetCategoryDto>(data);
 
 

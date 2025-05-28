@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Services;
 
-public class ProductService(DataContext context, IBaseRepository<Product, int> repository, ILogger<ProductService> logger, IMapper mapper,IMemoryCacheService memoryCacheService) : IPoductService
+public class ProductService(DataContext context, IBaseRepository<Product, int> repository, ILogger<ProductService> logger, IMapper mapper, IMemoryCacheService memoryCacheService, IRedisCacheService redisCacheService) : IPoductService
 {
     public async Task<Response<GetProductDto>> CreateAsync(CreateProductDto request)
     {
@@ -21,6 +21,7 @@ public class ProductService(DataContext context, IBaseRepository<Product, int> r
             return new Response<GetProductDto>(HttpStatusCode.BadRequest, "Product not added!");
         }
         var data = mapper.Map<GetProductDto>(product);
+        await redisCacheService.RemoveData("products");
 
         return new Response<GetProductDto>(data);
     }
@@ -37,6 +38,8 @@ public class ProductService(DataContext context, IBaseRepository<Product, int> r
         {
             return new Response<string>(HttpStatusCode.BadRequest, "Product not deleted!");
         }
+        await redisCacheService.RemoveData("products");
+
         return new Response<string>("Product deleted successfuly");
     }
 
@@ -44,7 +47,9 @@ public class ProductService(DataContext context, IBaseRepository<Product, int> r
     {
 
         const string cacheKey = "products";
-        var product = memoryCacheService.GetData<List<GetProductDto>>(cacheKey);
+        // var product = memoryCacheService.GetData<List<GetProductDto>>(cacheKey);
+        var product = redisCacheService.GetData<List<GetProductDto>>(cacheKey);
+
         var validFilter = new ValidFilter(filter.PageNumber, filter.PageSize);
 
         var Product = await repository.GetAll();
@@ -90,7 +95,7 @@ public class ProductService(DataContext context, IBaseRepository<Product, int> r
         }
 
         var data = mapper.Map<GetProductDto>(Product);
-
+        await redisCacheService.RemoveData("products");
         return new Response<GetProductDto>(data);
     }
 
@@ -118,23 +123,26 @@ public class ProductService(DataContext context, IBaseRepository<Product, int> r
         }
 
         var data = mapper.Map<GetProductDto>(Product);
+        await redisCacheService.RemoveData("products");
+
         return new Response<GetProductDto>(data);
 
     }
-    
+
 
     public async Task PromoteProductAsync(int productId, bool makeTop, bool makePremium)
-{
-    var product = await context.Products.FindAsync(productId);
-    if (product == null) return;
+    {
+        var product = await context.Products.FindAsync(productId);
+        if (product == null) return;
 
-    if (makeTop) product.IsTop = true;
-    if (makePremium) product.IsPremium = true;
+        if (makeTop) product.IsTop = true;
+        if (makePremium) product.IsPremium = true;
 
-    product.PremiumOrTopExpiryDate = DateTime.UtcNow.AddDays(7);
+        product.PremiumOrTopExpiryDate = DateTime.UtcNow.AddDays(7);
+        await redisCacheService.RemoveData("products");
 
-    await context.SaveChangesAsync();
-}
+        await context.SaveChangesAsync();
+    }
 
 
 }
